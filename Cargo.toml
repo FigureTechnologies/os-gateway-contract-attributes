@@ -1,0 +1,20 @@
+[package]
+name = "os-gateway-contract-attributes"
+version = "0.0.1"
+authors = ["Jake Schwartz <jschwartz@figure.com>", "Pierce Trey <ptrey@figure.com>"]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/FigureTechnologies/os-gateway-contract-attributes"
+description = "A simple rust library that appends attributes to a CosmWasm Response"
+keywords = ["figure-tech", "blockchain", "smart-contracts", "defi", "finance"]
+categories = ["cryptography:cryptocurrencies", "wasm"]
+resolver = "2"
+
+[lib]
+crate-type = ["rlib"]
+
+[features]
+library = []
+
+[dev-dependencies]
+cosmwasm-std = "=1.0.0"
