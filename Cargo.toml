@@ -8,10 +8,7 @@ repository = "https://github.com/FigureTechnologies/os-gateway-contract-attribut
 description = "A simple rust library that appends attributes to a CosmWasm Response"
 keywords = ["figure-tech", "blockchain", "smart-contracts", "defi", "finance"]
 categories = ["cryptography:cryptocurrencies", "wasm"]
-resolver = "2"
-
-[lib]
-crate-type = ["rlib"]
+include = ["src/", "LICENSE", "README.md"]
 
 [features]
 library = []

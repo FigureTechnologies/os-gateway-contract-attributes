@@ -17,7 +17,7 @@ impl OsGatewayEventAttributes {
         target_account_address: S2,
     ) -> Self {
         Self::new()
-            .insert_attribute(EVENT_TYPE_KEY, ACCESS_GRANT_VALUE)
+            .with_event_type(ACCESS_GRANT_VALUE)
             .with_scope_address(scope_address)
             .with_target_account_address(target_account_address)
     }
@@ -27,9 +27,17 @@ impl OsGatewayEventAttributes {
         target_account_address: S2,
     ) -> Self {
         Self::new()
-            .insert_attribute(EVENT_TYPE_KEY, ACCESS_REVOKE_VALUE)
+            .with_event_type(ACCESS_REVOKE_VALUE)
             .with_scope_address(scope_address)
             .with_target_account_address(target_account_address)
+    }
+
+    pub fn with_access_grant_id<S: Into<String>>(self, access_grant_id: S) -> Self {
+        self.insert_attribute(ACCESS_GRANT_ID_KEY, access_grant_id)
+    }
+
+    fn with_event_type<S: Into<String>>(self, event_type: S) -> Self {
+        self.insert_attribute(EVENT_TYPE_KEY, event_type)
     }
 
     fn with_scope_address<S: Into<String>>(self, scope_address: S) -> Self {
@@ -38,10 +46,6 @@ impl OsGatewayEventAttributes {
 
     fn with_target_account_address<S: Into<String>>(self, target_account_address: S) -> Self {
         self.insert_attribute(TARGET_ACCOUNT_KEY, target_account_address)
-    }
-
-    pub fn with_access_grant_id<S: Into<String>>(self, access_grant_id: S) -> Self {
-        self.insert_attribute(ACCESS_GRANT_ID_KEY, access_grant_id)
     }
 
     fn new() -> Self {
