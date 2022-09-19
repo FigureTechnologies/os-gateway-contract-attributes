@@ -195,7 +195,7 @@ mod tests {
         }
     }
 
-    pub fn single_attribute_for_key<'a, T>(response: &'a Response<T>, key: &'a str) -> &'a str {
+    fn single_attribute_for_key<'a, T>(response: &'a Response<T>, key: &'a str) -> &'a str {
         response
             .attributes
             .iter()
