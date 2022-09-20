@@ -2,7 +2,7 @@ use crate::attribute_consts::{
     ACCESS_GRANT_ID_KEY, ACCESS_GRANT_VALUE, ACCESS_REVOKE_VALUE, EVENT_TYPE_KEY,
     SCOPE_ADDRESS_KEY, TARGET_ACCOUNT_KEY,
 };
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::vec::IntoIter;
 
 /// Creates and tracks all attributes needed to properly interact with [Object Store Gateway](https://github.com/provenance-io/object-store-gateway).
@@ -14,7 +14,7 @@ use std::vec::IntoIter;
 /// function.
 #[derive(Clone, Debug)]
 pub struct OsGatewayAttributeGenerator {
-    attributes: HashMap<String, String>,
+    attributes: BTreeMap<String, String>,
 }
 impl OsGatewayAttributeGenerator {
     // TODO: Update this comment with authz information when that capability gets added to the gateway
@@ -55,7 +55,7 @@ impl OsGatewayAttributeGenerator {
     /// * The [Provenance Blockchain Account](https://docs.provenance.io/blockchain/basics/accounts)
     /// that signs the wasm payload must be the value owner of the
     /// [Provenance Blockchain Scope](https://docs.provenance.io/modules/metadata-module#metadata-scope)
-    /// OR the signer must be the same account as is used for [target_account_address](self::OsGatewayAttributeGenerator::access_revoke::target_account_address).
+    /// OR the signer must be the same account as is used for [target_account_address](self::OsGatewayAttributeGenerator::access_revoke).
     ///
     /// # Parameters
     ///
@@ -104,7 +104,7 @@ impl OsGatewayAttributeGenerator {
 
     fn new() -> Self {
         Self {
-            attributes: HashMap::new(),
+            attributes: BTreeMap::new(),
         }
     }
 
@@ -179,6 +179,47 @@ mod tests {
             &access_revoke,
             Some("grant_id_2"),
         );
+    }
+
+    #[test]
+    fn test_output_attributes_are_deterministic() {
+        // Verify first that two identically-built generators produce the same output
+        let first_grant_attrs = OsGatewayAttributeGenerator::test_access_grant()
+            .with_access_grant_id("a")
+            .into_iter()
+            .collect::<Vec<(String, String)>>();
+        let second_grant_attrs = OsGatewayAttributeGenerator::test_access_grant()
+            .with_access_grant_id("a")
+            .into_iter()
+            .collect::<Vec<(String, String)>>();
+        assert_eq!(
+            first_grant_attrs,
+            second_grant_attrs,
+            "both grant attributes lists should be identical due to deterministic ordering of the BTreeMap",
+        );
+        assert_eq!(
+            4,
+            first_grant_attrs.len(),
+            "four attributes should be produced",
+        );
+        // Then sort keys from an unsorted state (based on their values in attribute_consts) and
+        // verify that the output produced in the sorted result matches exactly with the sorted
+        // key result.
+        let mut expected_keys = vec![
+            SCOPE_ADDRESS_KEY,
+            ACCESS_GRANT_ID_KEY,
+            EVENT_TYPE_KEY,
+            TARGET_ACCOUNT_KEY,
+        ];
+        expected_keys.sort();
+        for (index, key) in expected_keys.into_iter().enumerate() {
+            assert_eq!(
+                key,
+                first_grant_attrs[index].0,
+                "the key at position {} should be {key} - the result of the attribute sort was not deterministic",
+                index,
+            );
+        }
     }
 
     fn assert_attribute_values_are_correct(
