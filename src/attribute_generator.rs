@@ -55,7 +55,7 @@ impl OsGatewayAttributeGenerator {
     /// * The [Provenance Blockchain Account](https://docs.provenance.io/blockchain/basics/accounts)
     /// that signs the wasm payload must be the value owner of the
     /// [Provenance Blockchain Scope](https://docs.provenance.io/modules/metadata-module#metadata-scope)
-    /// OR the signer must be the same account as is used for [target_account_address](self::OsGatewayAttributeGenerator::access_revoke::target_account_address).
+    /// OR the signer must be the same account as is used for [target_account_address](self::OsGatewayAttributeGenerator::access_revoke).
     ///
     /// # Parameters
     ///
@@ -183,6 +183,7 @@ mod tests {
 
     #[test]
     fn test_output_attributes_are_deterministic() {
+        // Verify first that two identically-built generators produce the same output
         let first_grant_attrs = OsGatewayAttributeGenerator::test_access_grant()
             .with_access_grant_id("a")
             .into_iter()
@@ -201,6 +202,9 @@ mod tests {
             first_grant_attrs.len(),
             "four attributes should be produced",
         );
+        // Then sort keys from an unsorted state (based on their values in attribute_consts) and
+        // verify that the output produced in the sorted result matches exactly with the sorted
+        // key result.
         let mut expected_keys = vec![
             SCOPE_ADDRESS_KEY,
             ACCESS_GRANT_ID_KEY,
