@@ -1,7 +1,4 @@
-use crate::attribute_consts::{
-    ACCESS_GRANT_ID_KEY, ACCESS_GRANT_VALUE, ACCESS_REVOKE_VALUE, EVENT_TYPE_KEY,
-    SCOPE_ADDRESS_KEY, TARGET_ACCOUNT_KEY,
-};
+use crate::{OS_GATEWAY_EVENT_TYPES, OS_GATEWAY_KEYS};
 use std::collections::BTreeMap;
 use std::vec::IntoIter;
 
@@ -42,7 +39,7 @@ impl OsGatewayAttributeGenerator {
         target_account_address: S2,
     ) -> Self {
         Self::new()
-            .with_event_type(ACCESS_GRANT_VALUE)
+            .with_event_type(OS_GATEWAY_EVENT_TYPES.access_grant)
             .with_scope_address(scope_address)
             .with_target_account_address(target_account_address)
     }
@@ -69,7 +66,7 @@ impl OsGatewayAttributeGenerator {
         target_account_address: S2,
     ) -> Self {
         Self::new()
-            .with_event_type(ACCESS_REVOKE_VALUE)
+            .with_event_type(OS_GATEWAY_EVENT_TYPES.access_revoke)
             .with_scope_address(scope_address)
             .with_target_account_address(target_account_address)
     }
@@ -87,19 +84,19 @@ impl OsGatewayAttributeGenerator {
     /// and grantee [Provenance Blockchain Account](https://docs.provenance.io/blockchain/basics/accounts) address
     /// combination at once.
     pub fn with_access_grant_id<S: Into<String>>(self, access_grant_id: S) -> Self {
-        self.insert_attribute(ACCESS_GRANT_ID_KEY, access_grant_id)
+        self.insert_attribute(OS_GATEWAY_KEYS.access_grant_id, access_grant_id)
     }
 
     fn with_event_type<S: Into<String>>(self, event_type: S) -> Self {
-        self.insert_attribute(EVENT_TYPE_KEY, event_type)
+        self.insert_attribute(OS_GATEWAY_KEYS.event_type, event_type)
     }
 
     fn with_scope_address<S: Into<String>>(self, scope_address: S) -> Self {
-        self.insert_attribute(SCOPE_ADDRESS_KEY, scope_address)
+        self.insert_attribute(OS_GATEWAY_KEYS.scope_address, scope_address)
     }
 
     fn with_target_account_address<S: Into<String>>(self, target_account_address: S) -> Self {
-        self.insert_attribute(TARGET_ACCOUNT_KEY, target_account_address)
+        self.insert_attribute(OS_GATEWAY_KEYS.target_account, target_account_address)
     }
 
     fn new() -> Self {
@@ -128,11 +125,8 @@ impl IntoIterator for OsGatewayAttributeGenerator {
 
 #[cfg(test)]
 mod tests {
-    use crate::attribute_consts::{
-        ACCESS_GRANT_ID_KEY, ACCESS_GRANT_VALUE, ACCESS_REVOKE_VALUE, EVENT_TYPE_KEY,
-        SCOPE_ADDRESS_KEY, TARGET_ACCOUNT_KEY,
-    };
     use crate::attribute_generator::OsGatewayAttributeGenerator;
+    use crate::{OS_GATEWAY_EVENT_TYPES, OS_GATEWAY_KEYS};
     use cosmwasm_std::Response;
 
     const DEFAULT_SCOPE_ADDRESS: &str = "scope_address";
@@ -152,30 +146,42 @@ mod tests {
     #[test]
     fn test_access_grant_contents() {
         let mut access_grant = OsGatewayAttributeGenerator::test_access_grant();
-        assert_attribute_values_are_correct(ACCESS_GRANT_VALUE, &access_grant, None);
+        assert_attribute_values_are_correct(
+            OS_GATEWAY_EVENT_TYPES.access_grant,
+            &access_grant,
+            None,
+        );
         access_grant = access_grant.with_access_grant_id(DEFAULT_GRANT_ID);
         assert_attribute_values_are_correct(
-            ACCESS_GRANT_VALUE,
+            OS_GATEWAY_EVENT_TYPES.access_grant,
             &access_grant,
             Some(DEFAULT_GRANT_ID),
         );
         access_grant = access_grant.with_access_grant_id("grant_id_2");
-        assert_attribute_values_are_correct(ACCESS_GRANT_VALUE, &access_grant, Some("grant_id_2"));
+        assert_attribute_values_are_correct(
+            OS_GATEWAY_EVENT_TYPES.access_grant,
+            &access_grant,
+            Some("grant_id_2"),
+        );
     }
 
     #[test]
     fn test_access_revoke_contents() {
         let mut access_revoke = OsGatewayAttributeGenerator::test_access_revoke();
-        assert_attribute_values_are_correct(ACCESS_REVOKE_VALUE, &access_revoke, None);
+        assert_attribute_values_are_correct(
+            OS_GATEWAY_EVENT_TYPES.access_revoke,
+            &access_revoke,
+            None,
+        );
         access_revoke = access_revoke.with_access_grant_id(DEFAULT_GRANT_ID);
         assert_attribute_values_are_correct(
-            ACCESS_REVOKE_VALUE,
+            OS_GATEWAY_EVENT_TYPES.access_revoke,
             &access_revoke,
             Some(DEFAULT_GRANT_ID),
         );
         access_revoke = access_revoke.with_access_grant_id("grant_id_2");
         assert_attribute_values_are_correct(
-            ACCESS_REVOKE_VALUE,
+            OS_GATEWAY_EVENT_TYPES.access_revoke,
             &access_revoke,
             Some("grant_id_2"),
         );
@@ -206,10 +212,10 @@ mod tests {
         // verify that the output produced in the sorted result matches exactly with the sorted
         // key result.
         let mut expected_keys = vec![
-            SCOPE_ADDRESS_KEY,
-            ACCESS_GRANT_ID_KEY,
-            EVENT_TYPE_KEY,
-            TARGET_ACCOUNT_KEY,
+            OS_GATEWAY_KEYS.scope_address,
+            OS_GATEWAY_KEYS.access_grant_id,
+            OS_GATEWAY_KEYS.event_type,
+            OS_GATEWAY_KEYS.target_account,
         ];
         expected_keys.sort();
         for (index, key) in expected_keys.into_iter().enumerate() {
@@ -244,52 +250,52 @@ mod tests {
             "expected the correct number of attributes to be held in the cosmwasm response",
         );
         assert_eq!(
-            expected_event_key, generator.attributes[EVENT_TYPE_KEY],
+            expected_event_key, generator.attributes[OS_GATEWAY_KEYS.event_type],
             "the event type key should equate to the expected value in the attribute generator",
         );
         assert_eq!(
             expected_event_key,
-            single_attribute_for_key(&response, EVENT_TYPE_KEY),
+            single_attribute_for_key(&response, OS_GATEWAY_KEYS.event_type),
             "the event the key should equate to the expected value in the cosmwasm response",
         );
         assert_eq!(
-            DEFAULT_SCOPE_ADDRESS, generator.attributes[SCOPE_ADDRESS_KEY],
+            DEFAULT_SCOPE_ADDRESS, generator.attributes[OS_GATEWAY_KEYS.scope_address],
             "the scope address key should contain the default scope address value in the attribute generator",
         );
         assert_eq!(
             DEFAULT_SCOPE_ADDRESS,
-            single_attribute_for_key(&response, SCOPE_ADDRESS_KEY),
+            single_attribute_for_key(&response, OS_GATEWAY_KEYS.scope_address),
             "the scope address key should contain the default scope address value in the cosmwasm response",
         );
         assert_eq!(
-            DEFAULT_TARGET_ACCOUNT, generator.attributes[TARGET_ACCOUNT_KEY],
+            DEFAULT_TARGET_ACCOUNT, generator.attributes[OS_GATEWAY_KEYS.target_account],
             "the target account key should contain the default target account address value in the attribute generator",
         );
         assert_eq!(
             DEFAULT_TARGET_ACCOUNT,
-            single_attribute_for_key(&response, TARGET_ACCOUNT_KEY),
+            single_attribute_for_key(&response, OS_GATEWAY_KEYS.target_account),
             "the target account key should contain the default target account address value in the cosmwasm response",
         );
         if let Some(grant_id) = grant_id {
             assert_eq!(
-                grant_id, generator.attributes[ACCESS_GRANT_ID_KEY],
+                grant_id, generator.attributes[OS_GATEWAY_KEYS.access_grant_id],
                 "the access grant id key should contain the provided access grant id value in the attribute generator",
             );
             assert_eq!(
                 grant_id,
-                single_attribute_for_key(&response, ACCESS_GRANT_ID_KEY),
+                single_attribute_for_key(&response, OS_GATEWAY_KEYS.access_grant_id),
                 "the access grant id key should contain the provided access grant id value in the cosmwasm response",
             );
         } else {
             assert!(
-                !generator.attributes.contains_key(ACCESS_GRANT_ID_KEY),
+                !generator.attributes.contains_key(OS_GATEWAY_KEYS.access_grant_id),
                 "the access grant id key was not expected to be provided to the attribute generator",
             );
             assert!(
                 !response
                     .attributes
                     .iter()
-                    .any(|attr| attr.key == ACCESS_GRANT_ID_KEY),
+                    .any(|attr| attr.key == OS_GATEWAY_KEYS.access_grant_id),
                 "the access grant id key was not expected to be provided to the cosmwasm response",
             )
         }
