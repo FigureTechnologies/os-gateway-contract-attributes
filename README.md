@@ -8,7 +8,7 @@
 [license-badge]: https://img.shields.io/github/license/FigureTechnologies/os-gateway-contract-attributes.svg
 [license-url]: https://github.com/FigureTechnologies/os-gateway-contract-attributes/blob/main/LICENSE
 [crates-badge]: https://img.shields.io/crates/v/os-gateway-contract-attributes.svg
-[crates-release]: https://https://crates.io/crates/os-gateway-contract-attributes
+[crates-release]: https://crates.io/crates/os-gateway-contract-attributes
 [release-badge]: https://img.shields.io/github/tag/FigureTechnologies/os-gateway-contract-attributes.svg
 [release-latest]: https://github.com/FigureTechnologies/os-gateway-contract-attributes/releases/latest
 
