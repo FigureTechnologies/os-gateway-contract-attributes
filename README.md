@@ -1,5 +1,17 @@
 # Object Store Gateway Contract Attributes
 
+## Status
+[![Latest Release][release-badge]][release-latest]
+![crates.io](https://img.shields.io/crates/v/os-gateway-contract-attributes.svg)
+[![Apache 2.0 License][license-badge]][license-url]
+
+[license-badge]: https://img.shields.io/github/license/FigureTechnologies/os-gateway-contract-attributes.svg
+[license-url]: https://github.com/FigureTechnologies/os-gateway-contract-attributes/blob/main/LICENSE
+[release-badge]: https://img.shields.io/github/tag/FigureTechnologies/os-gateway-contract-attributes.svg
+[release-latest]: https://github.com/FigureTechnologies/os-gateway-contract-attributes/releases/latest
+
+## Usage
+
 This library includes helper functions for appending event attributes in a [CosmWasm](https://github.com/CosmWasm/cosmwasm)-based
 smart contract.
 
