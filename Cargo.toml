@@ -14,4 +14,4 @@ include = ["src/", "LICENSE", "README.md"]
 library = []
 
 [dev-dependencies]
-cosmwasm-std = "=1.0.0"
+cosmwasm-std = "=1.5.3"
